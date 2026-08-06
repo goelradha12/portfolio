@@ -1,557 +1,531 @@
-import {
-  Braces,
-  Brush,
-  ChevronRight,
-  Code,
-  Code2,
-  Database,
-  File,
-  GitBranch,
-  Globe,
-  GraduationCap,
-  Mail,
-} from "lucide-react";
-import React from "react";
-import { Link } from "react-router";
-import { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import "./App.css";
 
+/* ── Skill → category color mapping (§4) ─────────────────────── */
+const skillColorMap = {
+  // Languages → violet
+  "JavaScript": "violet", "C++": "violet", "HTML": "violet", "CSS": "violet",
+  // Frontend → pink
+  "React": "pink", "Tailwind CSS": "pink",
+  // Backend → green
+  "Node.js": "green", "Express.js": "green", "MongoDB": "green",
+  "PostgreSQL": "green", "Prisma": "green",
+  // Platforms / CMS → lime
+  "WordPress": "lime", "Wix": "lime", "EDS": "lime",
+  // Tools → teal
+  "Git": "teal", "GitHub": "teal",
+};
+
+/* ── Card-head color rotation (violet → lime → pink) ─────────── */
+const headColors = ["violet", "lime", "pink"];
+
+/* ── Timeline dot color rotation ─────────────────────────────── */
+const dotColors = ["violet", "pink", "lime", "teal"];
+
 const App = () => {
-  const educationData = [
+  const carouselRef = useRef(null);
+
+  const scrollCarousel = (direction) => {
+    if (carouselRef.current) {
+      const scrollAmount = 340; // card width + gap
+      carouselRef.current.scrollBy({ left: direction === 'left' ? -scrollAmount : scrollAmount, behavior: 'smooth' });
+    }
+  };
+
+  // ── Data ─────────────────────────────────────────────────────
+
+  const experienceData = [
     {
-      degree: "MCA",
-      year: "2024-27",
-      detail: "9.71 CGPA",
-      institute: "MANIT (NIT-Bhopal)",
+      dateRange: "May – Jul 2026",
+      duration: "2.5 months",
+      company: "Adobe",
+      title: "Technical Consultant Intern",
+      description:
+        "Worked with Adobe's Edge Delivery Services team. Built performant web experiences on-site in Bengaluru, India.",
     },
     {
-      degree: "BCA",
-      year: "2020-23",
-      detail: "83.9%",
-      institute: "MDU, Rohtak",
+      dateRange: "May 2023 – Feb 2026",
+      duration: "2 yrs 10 months",
+      company: "HedgeHomes",
+      title: "WordPress Developer Intern",
+      description:
+        "Managed the company's official website and built over 25+ landing pages with WordPress. Remote role based in Noida, India.",
     },
     {
-      degree: "12th",
-      year: "2017-18",
-      detail: "93.2%",
-      institute: "Agrasen Public School, Hodal",
-    },
-    {
-      degree: "10th",
-      year: "2015-16",
-      detail: "94.2%",
-      institute: "Happy Modern School, Punhana",
+      dateRange: "Feb 2022",
+      duration: "1 month",
+      company: "Umeed A Drop Of Hope",
+      title: "Winter Intern",
+      description:
+        "Completed 4 tasks during the internship period and delivered a presentation as the final report.",
     },
   ];
 
-  const skills = [
-    { name: "HTML", icon: <Globe className="w-5 h-5" />, tooltip: "Markup Language for Web Pages" },
-    { name: "CSS", icon: <Brush className="w-5 h-5" />, tooltip: "Style Sheets for Web Design" },
-    { name: "Tailwind CSS", icon: <Brush className="w-5 h-5" />, tooltip: "Utility-first CSS Framework" },
-    { name: "JavaScript", icon: <Code2 className="w-5 h-5" />, tooltip: "Programming Language of the Web" },
-    { name: "React JS", icon: <Braces className="w-5 h-5" />, tooltip: "JavaScript Library for UI" },
-    { name: "Node JS", icon: <Braces className="w-5 h-5" />, tooltip: "JavaScript Runtime for Backend" },
-    { name: "Express JS", icon: <Braces className="w-5 h-5" />, tooltip: "Web Framework for Node.js" },
-    { name: "MongoDB", icon: <Database className="w-5 h-5" />, tooltip: "NoSQL Document Database" },
-    { name: "Prisma PostgreSQL", icon: <Database className="w-5 h-5" />, tooltip: "PostgreSQL ORM with Prisma" },
-    { name: "CPP", icon: <Code2 className="w-5 h-5" />, tooltip: "Object-oriented Programming Language" },
-    { name: "WordPress", icon: <Globe className="w-5 h-5" />, tooltip: "CMS for Websites and Blogs" },
-    { name: "Wix", icon: <Globe className="w-5 h-5" />, tooltip: "Drag-and-drop Website Builder" },
-    { name: "Git", icon: <GitBranch className="w-5 h-5" />, tooltip: "Version Control System" },
-    { name: "GitHub", icon: <GitBranch className="w-5 h-5" />, tooltip: "Hosting for Git Repositories" },
-    { name: "EDS", icon: <Globe className="w-5 h-5" />, tooltip: "Edge Delivery Service" },
+  const educationData = [
+    { degree: "MCA", year: "2024 – 27", detail: "9.45 CGPA", institute: "MANIT (NIT Bhopal)" },
+    { degree: "BCA", year: "2020 – 23", detail: "83.9%", institute: "MDU, Rohtak" },
+    { degree: "12th", year: "2017 – 18", detail: "93.2%", institute: "Agrasen Public School, Hodal" },
+    { degree: "10th", year: "2015 – 16", detail: "94.2%", institute: "Happy Modern School, Punhana" },
+  ];
+
+  const projects = [
+    {
+      name: "Craftora",
+      category: "Edge Delivery Services",
+      summary: "E-commerce platform for designing and purchasing customized merchandise.",
+      tech: ["EDS", "HTML", "CSS", "JavaScript"],
+      description:
+        "Craftora enables users to transform everyday products into unique, personalized items by adding their own text, images, and creative designs.",
+      links: [
+        { text: "Live Demo", url: "https://main--craftora-eds--goelradha12.aem.page/" },
+        { text: "GitHub", url: "https://github.com/goelradha12/craftora-eds" },
+      ],
+    },
+    {
+      name: "CookTheCode",
+      category: "Full-Stack Application",
+      summary: "Full-stack LeetCode-style problem-solving platform.",
+      tech: ["React", "Express.js", "PostgreSQL"],
+      description:
+        "Built with secure authentication, role-based access for managing problems, user profiles, submission tracking, and detailed editorial solutions.",
+      links: [
+        { text: "GitHub", url: "https://github.com/goelradha12/cohort/tree/main/MyLeetlab" },
+      ],
+    },
+    {
+      name: "Kanban Board",
+      category: "Frontend Project",
+      summary: "Drag-and-drop task management board.",
+      tech: ["React", "Tailwind CSS", "JavaScript"],
+      description:
+        "A Kanban board that allows users to create, update, and delete tasks with drag and drop functionality between columns.",
+      links: [
+        { text: "Live Demo", url: "https://kanbans.netlify.app/" },
+        { text: "GitHub", url: "https://github.com/goelradha12/cohort/blob/main/kanban%20dashboard/kanban.md" },
+      ],
+    },
+  ];
+
+  const wordpressVideos = [
+    { file: "04.11.2024_21.52.46_REC.mp4", title: "Real Estate Project Portfolio" },
+    { file: "bpwastemgt.mp4", title: "BP Waste Management" },
+    { file: "mahagun-my-laagoon.mp4", title: "Mahagun My Laagoon" },
+    { file: "noida-project.mp4", title: "Noida Project" },
+    { file: "verifydoors.mp4", title: "Verify Doors" },
+    { file: "soc.mp4", title: "SenseOverCents" },
+  ];
+
+  const skillGroups = [
+    { label: "Languages", items: ["HTML", "CSS", "JavaScript", "C++"] },
+    { label: "Frontend", items: ["React", "Tailwind CSS"] },
+    { label: "Backend", items: ["Node.js", "Express.js", "MongoDB", "PostgreSQL", "Prisma"] },
+    { label: "Platforms", items: ["WordPress", "Wix", "EDS"] },
+    { label: "Tools", items: ["Git", "GitHub"] },
   ];
 
   const recommendations = [
     {
       name: "Jeeva (V Naveen Reddy)",
       designation: "Founder @ SenseOverCents",
-      intro: "Radha’s client – Dec 29, 2024",
-      feedback: `She has helped us build our company website recently on WordPress, throughout the process she has been very understanding in nature, and built us a good website. Finding people with talent and skills is hard, you know what’s much harder? To find the ones with character and humility, she has them both.`,
+      intro: "Client · Dec 2024",
+      feedback: `She has helped us build our company website recently on WordPress, throughout the process she has been very understanding in nature, and built us a good website. Finding people with talent and skills is hard, you know what's much harder? To find the ones with character and humility, she has them both.`,
       profile: "https://www.linkedin.com/in/jeeva-v-naveen-reddy-333924188",
-      summary: "Thoughtful, disciplined and technically strong.",
     },
     {
       name: "Abhijit Dharmadhikari",
-      designation: "Blogger | Advance Excel | Analytics",
-      intro: "Radha’s client – Aug 13, 2023",
-      feedback: `Choosing the WordPress Website Design service From you was the best decision I made for my business. I am extremely satisfied with the WordPress Website Design service I received. Radha Goyal was professional, and efficient, and delivered a stunning website that perfectly captured my brand. The SEO optimization has significantly improved my website's visibility online. Highly recommend!`,
+      designation: "Blogger | Analytics",
+      intro: "Client · Aug 2023",
+      feedback: `Choosing the WordPress Website Design service was the best decision I made for my business. Radha Goyal was professional, efficient, and delivered a stunning website that perfectly captured my brand. The SEO optimization has significantly improved my website's visibility online. Highly recommend!`,
       profile: "https://www.linkedin.com/in/abhijit-dharmadhikari",
-      summary: "Efficient, trustworthy and solution-oriented.",
     },
     {
       name: "Collins Enosh",
-      designation: "1 Crore Views as a Writer | MBBS Dropout",
-      intro: "Managed Radha directly – May 5, 2023",
-      feedback: `Radha is a natural talent. She is so curious, and imaginative. This is the kind of writer, no AI can replace. If Radha writes for your brand, it will definitely be unique, quirky, eye-catching, and deep. On top of that she brings her child-like innocence, and energy. Working with Radha is fun, she enjoys her work; writing is her passion. If you love your work that much, of course you wille be good at it.`,
+      designation: "Writer | 1 Crore Views",
+      intro: "Client · May 2023",
+      feedback: `Radha is a natural talent. She is so curious, and imaginative. This is the kind of writer, no AI can replace. If Radha writes for your brand, it will definitely be unique, quirky, eye-catching, and deep.`,
       profile: "https://www.linkedin.com/in/collinsenosh",
-      summary: "Detail-driven and self-motivated.",
     },
     {
       name: "Alok Mishra",
-      designation: "Social Media Manager | Copywriter",
-      intro: "Radha’s client – Apr 14, 2023",
-      feedback: `I needed help with my portfolio site — she took it on immediately. She gave life to my content, making it client-ready. If you're looking for a website creator, she’s top-notch.`,
+      designation: "Social Media Manager",
+      intro: "Client · Apr 2023",
+      feedback: `I needed help with my portfolio site — she took it on immediately. She gave life to my content, making it client-ready. If you're looking for a website creator, she's top-notch.`,
       profile: "https://www.linkedin.com/in/alok-mishra-11ba84212",
-      summary: "Creative and technically sharp.",
     },
     {
-      name: "ASHWIN M",
-      designation: "Personal Branding & Content Specialist",
-      intro: "Managed Radha directly – Apr 14, 2023",
-      feedback: `Radha is very passionate about web designing and content writing. Her zeal to purusue web development career is impressing. She is very kind and understands the requirements quickly. Her work is amazing and she helped me develope a website for my mental health space. Thanks radha. Good luck to you! :)`,
+      name: "Ashwin M",
+      designation: "Personal Branding Specialist",
+      intro: "Client · Apr 2023",
+      feedback: `Radha is very passionate about web designing and content writing. She is very kind and understands the requirements quickly. Her work is amazing and she helped me develop a website for my mental health space.`,
       profile: "https://www.linkedin.com/in/ashwin-murugesan",
-      summary: "Professional and organized.",
     },
     {
       name: "Milan P Sony",
-      designation: "Growth Marketer & SEO Content Manager",
-      intro: "Radha’s client – Nov 7, 2022",
+      designation: "Growth Marketer",
+      intro: "Client · Nov 2022",
       feedback: `She was self-driven and creative with content writing. Highly recommend her. Thank you, Radha!`,
       profile: "https://www.linkedin.com/in/milanpsony",
-      summary: "Creative and passionate.",
     },
   ];
 
-  const experienceData = [
+  const practiceLinks = [
     {
-      dateRange: "Feb, 2022",
-      duration: "1 month",
-      company: "Umeed A Drop Of Hope - Foundation",
-      title: "Winter Intern",
-      description: "Did 4 tasks during internship. Submitted ppt as final internship report.",
-    },
-    {
-      dateRange: "May 2023 — Feb 2026",
-      duration: "2 yrs 10 mos",
-      company: "HedgeHomes",
-      title: "WordPress Developer Intern",
-      description: "Remote · Noida, Uttar Pradesh, India. Managed the company’s official website and built over 25+ landing pages with WordPress.",
-    },
-    {
-      dateRange: "May 2026 — July 17, 2026",
-      duration: "2.5 mos",
-      company: "Adobe",
-      title: "Technical Consultant Intern",
-      description: "Tech: Adobe's Edge Delivery Services. Bengaluru, Karnataka, India · On-site",
-    },
-  ];
-
-  const certificates = [
-    {
-      name: "Frontend Development with React",
-      issued: "June 2024",
-      skills: ["React", "JSX", "Hooks", "Tailwind"],
-      image: "https://via.placeholder.com/300x200.png",
-    },];
-
-  const projects = [
-    {
-      name: "Craftora",
-      tech: ["EDS", "HTML", "CSS", "JS"],
-      duration: "2026",
-      description: "Craftora is a personalized e-commerce platform that enables users to design and purchase customized merchandise. The platform allows customers to transform everyday products into unique, personalized items by adding their own text, images, and creative designs.",
-      link: [
+      category: "HTML & CSS",
+      items: [
+        { name: "CodePen", links: [{ text: "Visit", url: "https://codepen.io/goelradha12" }] },
         {
-          text: "Live Link",
-          link: "https://main--craftora-eds--goelradha12.aem.page/",
-        },
-        {
-          text: "GitHub",
-          link: "https://github.com/goelradha12/craftora-eds",
-        }
-      ]
-    },
-    {
-      name: "Jagruk Bano India – Blog Website",
-      tech: ["WordPress"],
-      duration: "May 2022 – Nov 2023",
-      description:
-        "Managed and owned a WordPress platform focused on government schemes for 1.5 years, publishing over 20+ articles. Optimized SEO to increase visibility and successfully achieved Google Ads approval.",
-      link: [
-        {
-          text: "Live",
-          link: "https://jagrukbanoindia.in/",
+          name: "Space Travel Website",
+          links: [
+            { text: "Live", url: "https://travel-in-a-website.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/Space-Website" },
+          ],
         },
       ],
     },
     {
-      name: "SenseOverCents - Freelance",
-      tech: ["WordPress"],
-      duration: "Jan 2025 – March 2025",
-      description:
-        "Designed and developed the company website in WordPress, ensuring consistent branding, smooth user experience, and mobile responsiveness.",
-      link: [
+      category: "React",
+      items: [
         {
-          text: "Live",
-          link: "https://senseovercents.com/",
-        },
-      ]
-    },
-    {
-      name: "CookTheCode – LeetCode Clone",
-      tech: ["ExpressJs", "PostgreSQL", "ReactJs"],
-      duration: "May 2025 – July 2025",
-      description:
-        "Built a full-stack problem-solving platform with secure authentication (login, signup, reset/forgot/update password, and email verification). \nImplemented role-based access for adding, editing, updating, or deleting problems. Users can create a profile, select problems, track submissions, and view detailed editorial solutions.",
-      link: [
-        {
-          text: "GitHub",
-          link: "https://github.com/goelradha12/cohort/tree/main/MyLeetlab",
-        }
-      ]
-
-    },
-    {
-      name: "Kanban Board",
-      tech: ["JavaScript"],
-      duration: "Dec 2024",
-      description:
-        "Built a Kanban board using React and Tailwind CSS. It allows users to create, update, and delete tasks, and also allows users to drag and drop tasks between columns.",
-      link: [
-        {
-          text: "GitHub",
-          link: "https://github.com/goelradha12/cohort/blob/main/kanban%20dashboard/kanban.md",
+          name: "E-commerce Product Page",
+          links: [
+            { text: "Live", url: "https://single-product-page-for-e-commerce.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/e-commerce-page" },
+          ],
         },
         {
-          text: "Live Link",
-          link: "https://kanbans.netlify.app/",
-        }
-      ]
-    }
+          name: "Tenzies Game",
+          links: [
+            { text: "Live", url: "https://64c654c961f7c9788630c9fa--incandescent-flan-f2db95.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/tenzies-game" },
+          ],
+        },
+      ],
+    },
+    {
+      category: "JavaScript",
+      items: [
+        { name: "30 Days of Code", links: [{ text: "Repo", url: "https://github.com/goelradha12/js-intermediate" }] },
+        {
+          name: "Currency Converter",
+          links: [
+            { text: "Live", url: "https://coruscating-stroopwafel-d8f303.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/currency-convertor" },
+          ],
+        },
+        {
+          name: "Tic-Tac-Toe",
+          links: [
+            { text: "Live", url: "https://radha-tic-tac-toe.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/tic-tac-toe" },
+          ],
+        },
+        {
+          name: "Simon Game",
+          links: [
+            { text: "Live", url: "https://simonegames.netlify.app/" },
+            { text: "Repo", url: "https://github.com/goelradha12/simonGame" },
+          ],
+        },
+      ],
+    },
+    {
+      category: "Java",
+      items: [
+        { name: "GitHub Repo", links: [{ text: "Visit", url: "https://github.com/goelradha12/Java" }] },
+      ],
+    },
+    {
+      category: "C++",
+      items: [
+        { name: "Competitive Programming", links: [{ text: "CodeChef", url: "https://www.codechef.com/users/radhagoel123" }] },
+        { name: "DSA", links: [{ text: "GeeksForGeeks", url: "https://auth.geeksforgeeks.org/user/goelradha12" }] },
+      ],
+    },
+    {
+      category: "C",
+      items: [
+        { name: "30 Days of Code", links: [{ text: "HackerRank", url: "https://www.hackerrank.com/goyalradha2001?hr_r=1" }] },
+      ],
+    },
   ];
 
   useEffect(() => {
-    document.title = "Developer's Portfolio";
-  }, [])
+    document.title = "Radha Goyal — Developer";
+  }, []);
+
+  // ── Render ───────────────────────────────────────────────────
 
   return (
-    <div className="mb-20">
+    <div className="page">
 
-      {/* Hero Section */}
-      <section className="hero-content flex-col lg:flex-row-reverse text-center lg:text-left mx-auto pt-20 pb-10 relative">
-        <div className="absolute inset-0 -z-20 pointer-events-none">
-          <div className="w-[600px] h-[600px] -z-20 bg-gradient-to-r from-purple-500 via-blue-500 to-pink-500 opacity-10 blur-3xl rounded-full absolute top-1/2 left-1/2" />
-        </div>
-        <div className="grid justify-items-center text-center mx-auto gap-5">
-          <img
-            src="https://res.cloudinary.com/dualriiog/image/upload/v1753216816/me_rlhev5.jpg"
-            alt="Radha"
-            className="w-40 h-40 object-cover rounded-full border-4 border-primary shadow-md z-40"
-          />
-          <div className="max-w-xl">
-            <h1 className="text-3xl md:text-5xl font-semibold text-primary">Hi, I'm Radha</h1>
-            <p className="mt-4 text-base md:text-lg text-base-content">
-              An MCA student with a passion for coding and a love for solving complex problems through logic and design.
-            </p>
-            <a
-              href="https://drive.google.com/file/d/1zwcf3h_zh-eYfsQCFqYNhuw7WDAW2Uf5/view?usp=sharing"
-              target="_blank"
-              className="btn btn-outline gap-2 mt-4  border-2 border-primary hover:bg-primary hover:text-white"
-            >
-              <File className="w-5 h-5" /> Resume
+      {/* ═══════ HERO (§5.1) ═══════ */}
+      <section className="hero">
+        <div className="hero-circle" />
+
+        <div>
+          <p className="hero-eyebrow">// whoami</p>
+          <h1>Radha Goyal</h1>
+          <p className="hero-role">
+            Full-stack developer · WordPress specialist · MCA at NIT Bhopal
+          </p>
+          <p className="hero-summary">
+            I build web applications that are functional, fast, and carefully designed. Currently focused on React, Node.js, and Adobe Edge Delivery Services.
+          </p>
+
+          <div className="hero-pills">
+            <span className="pill-tag">React</span>
+            <span className="pill-tag">Node.js</span>
+            <span className="pill-tag">WordPress</span>
+            <span className="pill-tag">EDS</span>
+          </div>
+
+          <div className="hero-links">
+            <a href="https://github.com/goelradha12" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" /></svg>
+              GitHub
+            </a>
+            <a href="https://www.linkedin.com/in/goyalradha123/" target="_blank" rel="noopener noreferrer">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138-.92-2.063 2.063-2.063 1.14 0 2.064-.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
+              LinkedIn
+            </a>
+            <a href="mailto:goyalradha2001@gmail.com">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4.236l-8 4.882-8-4.882V6l8 4.882L20 6v2.236z" /></svg>
+              Email
             </a>
           </div>
         </div>
-      </section>
 
-      {/* Social Links */}
-      <section className="bg-base-100 pb-20 text-center">
-        <hr className="border-t border-gray-600 w-1/6 mx-auto" />
-        <h2 className="text-2xl font-semibold pt-10 text-gray-500 mb-6">Connect with Me</h2>
-        <div className="flex justify-center gap-4 flex-wrap">
-          <a
-            href="https://github.com/goelradha12"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline btn-primary gap-2"
-          >
-            <GitBranch className="w-5 h-5" /> GitHub
-          </a>
-          <a
-            href="https://www.linkedin.com/in/goyalradha123/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-outline btn-info gap-2"
-          >
-            <Code className="w-5 h-5" /> LinkedIn
-          </a>
-          <a
-            href="mailto:goyalradha2001@gmail.com"
-            className="btn btn-outline btn-accent gap-2"
-          >
-            <Mail className="w-5 h-5" /> Email
-          </a>
-
+        {/* Photo with handwritten accent */}
+        <div className="hero-photo-wrapper">
+          <span className="hand-note">that's<br />me!</span>
+          <svg className="hand-arrow" viewBox="0 0 70 40">
+            <path d="M4 4C20 4 34 14 40 30" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" fill="none" />
+            <path d="M30 26L40 32L37 20" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          </svg>
+          <div className="photo-frame">
+            <img src="/me.png" alt="Radha Goyal" />
+          </div>
         </div>
       </section>
 
-      {/* Education Timeline */}
-      <section className="border-t border-base-300 py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Education</h2>
-
-        <div className="relative flex flex-col md:flex-row items-start md:items-center justify-center gap-10">
-          {educationData.map((item, idx, arr) => (
-            <div
-              key={idx}
-              className="flex flex-col items-center text-center relative w-full md:w-auto"
-            >
-              {/* Connector Line */}
-              {idx !== arr.length - 1 && (
-                <>
-                  <div className="hidden md:block absolute top-6 left-full w-10 h-1 bg-primary"></div>
-                  <div className="block md:hidden absolute top-full left-1/2 w-1 h-10 bg-primary"></div>
-                </>
-              )}
-
-              {/* Circle Icon */}
-              <div className="bg-primary text-white p-3 rounded-full mb-4 z-10 shadow-md">
-                <GraduationCap className="w-5 h-5" />
-              </div>
-
-              {/* Info Box */}
-              <div className="min-w-[220px] max-w-sm text-left md:text-center">
-                <h3 className="text-xl font-bold text-primary mb-1">{item.degree}</h3>
-                <p className="text-base text-gray-400 italic mb-2">{item.institute}</p>
-                <div className="text-base text-gray-400">
-                  <span className="font-semibold">{item.year}</span>
-                  <span className="hidden md:inline mx-1">•</span>
-                  <span className="font-medium">{item.detail}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+      {/* ═══════ PROJECTS (§5.2) ═══════ */}
+      <section id="projects" className="section">
+        <div className="section-head">
+          <p className="eyebrow">// projects</p>
+          <h2 className="section-title">Selected Work</h2>
         </div>
-      </section>
 
-      {/* Experience */}
-      <section className="border-t border-base-300 py-20 container mx-auto px-4 ">
-        <h2 className="text-3xl font-bold text-center mb-12">Experience</h2>
-        <div className="grid grid-cols-[1fr_1px_2fr] gap-4">
-          {experienceData.map((exp, idx) => (
-            <div key={idx} className="contents">
-              {/* Left Column - Date + Duration */}
-              <div className="text-right pr-4 text-base text-gray-400 whitespace-nowrap">
-                <p>{exp.dateRange}</p>
-                {exp.duration && <p>{exp.duration}</p>}
-              </div>
-
-              {/* Vertical Line */}
-              <div className="border-l-2 border-gray-400"></div>
-
-              {/* Right Column - Experience Details */}
-              <div className="pl-4 pb-8">
-                <p className="text-base font-medium text-gray-400">{exp.company}</p>
-                <h3 className="text-lg font-semibold uppercase">{exp.title}</h3>
-                {exp.description && (
-                  <p className="text-base mt-1 text-gray-400">{exp.description}</p>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* skills */}
-      <section className="border-t border-base-300 py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Skills</h2>
-        <div className="flex flex-wrap justify-center gap-6 px-4 max-w-6xl mx-auto">
-          {skills.map((skill) => (
-            <div
-              key={skill.name}
-              className="tooltip tooltip-top"
-              data-tip={skill.tooltip}
-            >
-              <div className="backdrop-blur-md bg-base-200/60 rounded-full border-b-1 border-base-300 shadow-md hover:shadow-lg transition-all duration-300 w-[240px] flex items-center gap-4 hover:-translate-y-1">
-                <div className="bg-gradient-to-br from-primary/40 to-secondary/40 text-white p-3 rounded-full shadow-lg">
-                  {skill.icon}
-                </div>
-                <span className="text-lg font-medium text-base-content">{skill.name}</span>
-              </div>
-            </div>
-
-          ))}
-        </div>
-      </section>
-
-      {/* Projects */}
-      <section className="border-t border-base-300 py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Projects</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, idx) => (
-            <div
-              key={idx}
-              className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="card-body">
-                <h3 className="card-title text-lg">{project.name}</h3>
-                <p className="text-base text-gray-400">{project.description}</p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {project.tech.map((t, i) => (
-                    <span
-                      key={i}
-                      className="badge badge-outline badge-primary"
-                    >
-                      {t}
+        <div className="case-grid">
+          {projects.map((project, idx) => {
+            const color = headColors[idx % headColors.length];
+            const isLime = color === "lime";
+            return (
+              <div key={idx} className="case-card">
+                <div className={`case-head case-head--${color}`}>
+                  <div className="case-head-circle" />
+                  <div className="case-head-top">
+                    <span className={`case-badge ${isLime ? "case-badge--dark" : "case-badge--light"}`}>
+                      {String(idx + 1).padStart(2, "0")}
                     </span>
-                  ))}
+                    <span className={`case-label ${isLime ? "case-label--dark" : "case-label--light"}`}>
+                      Case study ↗
+                    </span>
+                  </div>
                 </div>
-                <div className="card-actions justify-end mt-4">
-                  {project.link.map((data, i) => (
-                    <a
-                      key={i}
-                      href={data.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-outline btn-primary gap-2"
-                    >
-                      {data.text}
-                    </a>
-                  ))}
+                <div className="case-body">
+                  <p className={`case-eyebrow case-eyebrow--${color}`}>{project.category}</p>
+                  <h3>{project.name}</h3>
+                  <p>{project.description}</p>
+                  <div className="case-tech">
+                    {project.tech.map((t, i) => (
+                      <span key={i} className="case-tech-chip">{t}</span>
+                    ))}
+                  </div>
+                  <div className="case-links">
+                    {project.links.map((link, i) => (
+                      <a key={i} href={link.url} target="_blank" rel="noopener noreferrer" className="case-link">
+                        {link.text} →
+                      </a>
+                    ))}
+                  </div>
                 </div>
               </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══════ WORDPRESS PROJECTS ═══════ */}
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">// wordpress</p>
+          <h2 className="section-title">Client Projects</h2>
+          <p className="section-subtitle">
+            Landing pages and websites built for real clients using WordPress.
+          </p>
+        </div>
+
+        <div className="video-grid">
+          {wordpressVideos.map((video, idx) => (
+            <div key={idx} className="video-card">
+              <video
+                src={`/project_videos/${video.file}`}
+                controls
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+              <p className="video-card-title">{video.title}</p>
             </div>
           ))}
         </div>
       </section>
 
-      <section className="border-t border-base-300 py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">My Practice Platforms / Links</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-
-          {/* Frontend */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">HTML & CSS</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">CodePen.io</span> –
-                <a href="https://codepen.io/goelradha12" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Visit</a>
-              </li>
-              <li>
-                <span className="font-medium">Space Travel Website (Tutorial)</span><br />
-                <a href="https://travel-in-a-website.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/Space-Website" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* React Project */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">React</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">E-commerce Product Page - </span>
-                <a href="https://single-product-page-for-e-commerce.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/e-commerce-page" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-              <li>
-                <span className="font-medium">Tenzies Game - </span>
-                <a href="https://64c654c961f7c9788630c9fa--incandescent-flan-f2db95.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/tenzies-game" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* JS Projects */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">JavaScript</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">30 Days of Code </span> –
-                <a href="https://github.com/goelradha12/js-intermediate" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-              <li>
-                <span className="font-medium">Currency Converter </span>
-                <a href="https://coruscating-stroopwafel-d8f303.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/currency-convertor" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-              <li>
-                <span className="font-medium">Tic-Tac-Toe </span>
-                <a href="https://radha-tic-tac-toe.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/tic-tac-toe" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-              <li>
-                <span className="font-medium">Simon Game </span>
-                <a href="https://simonegames.netlify.app/" target="_blank" rel="noopener noreferrer" className="text-primary underline">Live</a> |
-                <a href="https://github.com/goelradha12/simonGame" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Repo</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* GitHub Java */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">Java (ongoing)</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">GitHub Repo</span> –
-                <a href="https://github.com/goelradha12/Java" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Visit</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* CPP */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">C++</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">Competitive Programming</span> –
-                <a href="https://www.codechef.com/users/radhagoel123" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">CodeChef</a>
-              </li>
-              <li>
-                <span className="font-medium">DSA with C++</span> –
-                <a href="https://auth.geeksforgeeks.org/user/goelradha12" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">GeeksForGeeks</a>
-              </li>
-            </ul>
-          </div>
-
-          {/* HackerRank */}
-          <div className="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow duration-300 p-4">
-            <h3 className="font-semibold text-lg mb-2">30 Days of Code (C)</h3>
-            <ul className="space-y-2 text-sm">
-              <li>
-                <span className="font-medium">HackerRank</span> –
-                <a href="https://www.hackerrank.com/goyalradha2001?hr_r=1" target="_blank" rel="noopener noreferrer" className="text-primary underline ml-1">Profile</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* recommendation and feedback */}
-      <section className="border-t border-base-300 py-20 container mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-center mb-2">Recommendations</h2>
-          <p className="text-base opacity-70">Words shared by people I've worked with</p>
+      {/* ═══════ EXPERIENCE (§5.3) ═══════ */}
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">// experience</p>
+          <h2 className="section-title">Where I've Worked</h2>
         </div>
 
-        <div className="flex gap-6 overflow-x-auto pb-4 px-4">
-          {recommendations.map((ref, idx) => (
-            <div
-              key={idx}
-              className="min-w-[300px] max-w-sm p-6 rounded-2xl shadow-md bg-base-200 flex-shrink-0 hover:shadow-xl transition-shadow"
-            >
-              <div className="flex flex-col gap-4">
+        <div className="timeline-stack">
+          {experienceData.map((exp, idx) => {
+            const dotColor = dotColors[idx % dotColors.length];
+            return (
+              <div key={idx} className="timeline-row">
+                <div className={`timeline-dot timeline-dot--${dotColor}`} />
                 <div>
-                  <a
-                    href={ref.profile}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xl font-semibold text-primary hover:underline"
-                  >
-                    {ref.name}
-                  </a>
-                  <p className="text-base text-gray-400 pl-2">{ref.designation}</p>
-                  <p className="mt-2 italic text-md text-base-content">{ref.summary}</p>
+                  <p className="timeline-date">{exp.dateRange} · {exp.duration}</p>
+                  <h3 className="timeline-title">{exp.title}</h3>
+                  <p className="timeline-company">{exp.company}</p>
+                  <p className="timeline-desc">{exp.description}</p>
                 </div>
-                <blockquote className="text-base text-gray-400 leading-relaxed">
-                  “{ref.feedback}”
-                </blockquote>
-                <p className="text-sm mt-1 text-gray-400 text-right">~{ref.intro}</p>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══════ EDUCATION (§5.4 -> Timeline) ═══════ */}
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">// education</p>
+          <h2 className="section-title">Academic Background</h2>
+        </div>
+
+        <div className="timeline-stack">
+          {educationData.map((item, idx) => {
+            const dotColor = dotColors[idx % dotColors.length];
+            return (
+              <div key={idx} className="timeline-row">
+                <div className={`timeline-dot timeline-dot--${dotColor}`} />
+                <div>
+                  <p className="timeline-date">{item.year} · {item.detail}</p>
+                  <h3 className="timeline-title">{item.institute}</h3>
+                  <p className="timeline-company">{item.degree}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ═══════ SKILLS (§5.5) ═══════ */}
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">// skills</p>
+          <h2 className="section-title">Technologies I Use</h2>
+        </div>
+
+        <div className="skills-section">
+          {skillGroups.map((group, idx) => (
+            <div key={idx}>
+              <p className="skill-group-label">{group.label}</p>
+              <div className="skill-group-pills">
+                {group.items.map((skill) => (
+                  <span key={skill} className={`skill-pill skill-pill--${skillColorMap[skill] || "violet"}`}>
+                    {skill}
+                  </span>
+                ))}
               </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* ═══════ PRACTICE PLATFORMS (§5.6) ═══════ */}
+      <section className="section">
+        <div className="section-head">
+          <p className="eyebrow">// practice</p>
+          <h2 className="section-title">Coding Platforms</h2>
+        </div>
+
+        <div className="list-grid">
+          {practiceLinks.map((group, idx) => (
+            <div key={idx} className="list-card">
+              <p className="list-card-header">{group.category}</p>
+              {group.items.map((item, i) => (
+                <div key={i} className="list-row">
+                  <div className="list-row-dot" style={{ background: `var(--${dotColors[idx % dotColors.length]})` }} />
+                  <span className="list-row-name">{item.name}</span>
+                  <span className="list-row-links">
+                    {item.links.map((link, j) => (
+                      <a key={j} href={link.url} target="_blank" rel="noopener noreferrer">
+                        {link.text}
+                      </a>
+                    ))}
+                  </span>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════ RECOMMENDATIONS (§5.7) ═══════ */}
+      <section className="section">
+        <div className="section-head" style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "16px" }}>
+          <div>
+            <p className="eyebrow">// testimonials</p>
+            <h2 className="section-title">Recommendations</h2>
+            <p className="section-subtitle">
+              Words from people I've worked with.
+            </p>
+          </div>
+          <div className="carousel-nav">
+            <button onClick={() => scrollCarousel('left')} className="carousel-btn" aria-label="Previous">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6" /></svg>
+            </button>
+            <button onClick={() => scrollCarousel('right')} className="carousel-btn" aria-label="Next">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6" /></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="rec-scroll" ref={carouselRef}>
+          {recommendations.map((rec, idx) => (
+            <div key={idx} className="rec-card">
+              <a href={rec.profile} target="_blank" rel="noopener noreferrer" className="rec-name">
+                {rec.name}
+              </a>
+              <p className="rec-designation">{rec.designation}</p>
+              <p className="rec-intro">{rec.intro}</p>
+              <p className="rec-quote">"{rec.feedback}"</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════ FOOTER (§5.9) ═══════ */}
+      <footer className="footer">
+        <p className="footer-copy">© 2026 Radha Goyal</p>
+        <div className="footer-links">
+          <a href="https://github.com/goelradha12" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.linkedin.com/in/goyalradha123/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a href="mailto:goyalradha2001@gmail.com">Email</a>
+        </div>
+      </footer>
     </div>
   );
 };
